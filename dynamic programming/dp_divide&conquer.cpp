@@ -1,22 +1,7 @@
-// https://codeforces.com/gym/103536/problem/A
-#include <cassert>
-#include <iostream>
-#include <cmath>
-typedef long long ll;
-using namespace std;
-
 int m, n;
-vector<ll> dp_before, dp_cur;
+vector<long long> dp_before, dp_cur;
 
-int costs[10000];
-
-ll C(int k, int j) {
-    ll tot;
-    for (int i = k; i < j; i++) {
-        tot += costs[i];
-    }
-    return tot * (k - j);
-}
+long long C(int i, int j);
 
 // compute dp_cur[l], ... dp_cur[r] (inclusive)
 void compute(int l, int r, int optl, int optr) {
@@ -24,10 +9,10 @@ void compute(int l, int r, int optl, int optr) {
         return;
 
     int mid = (l + r) >> 1;
-    pair<ll, int> best(LLONG_MAX, -1);
+    pair<long long, int> best = {LLONG_MAX, -1};
 
     for (int k = optl; k <= min(mid, optr); k++) {
-        best = min(best, make_pair((k ? dp_before[k - 1] : 0) + C(k, mid), k));
+        best = min(best, {(k ? dp_before[k - 1] : 0) + C(k, mid), k});
     }
 
     dp_cur[mid] = best.first;
@@ -37,7 +22,7 @@ void compute(int l, int r, int optl, int optr) {
     compute(mid + 1, r, opt, optr);
 }
 
-ll solve() {
+long long solve() {
     dp_before.assign(n,0);
     dp_cur.assign(n,0);
 
@@ -50,15 +35,4 @@ ll solve() {
     }
 
     return dp_before[n - 1];
-}
-
-int main() {
-    int n, g;
-    cin >> n >> g;
-
-    for (int i = 0; i < n; i++) {
-        cin >> costs[i];
-    }
- 
-    cout << solve() << '\n';
 }
