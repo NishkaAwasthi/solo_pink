@@ -1,12 +1,17 @@
+// find the sum of a given subsequence
+
 #include <stdio.h>
 #include <cstddef>
 #include <iostream>
 using namespace std;
+typedef long long ll;
 
 const string EMPTY=""; // for printing
+
 struct SplayTree {
     int v; // Value of node
     int size; // Subtree size
+    int total; //total sum so far
     SplayTree *c[2]; // Left child -> [0], right child -> [1]
     SplayTree *p; // Parent of node
 
@@ -21,8 +26,17 @@ struct SplayTree {
         return x->size;
     }
 
+    int GetTotal(SplayTree *x) {
+        if (x == NULL) { return 0; }
+        return x->total;
+    }
+
     void UpdateSize() {
         size = 1 + GetSize(c[0]) + GetSize(c[1]);
+    }
+
+    void UpdateTotal() {
+        total = v + GetTotal(c[0]) + GetTotal(c[1]);
     }
 
     void Rotate() {
@@ -43,6 +57,9 @@ struct SplayTree {
 
         p->UpdateSize();
         UpdateSize();
+
+        p->UpdateTotal();
+        UpdateTotal();
 
         p = gp;
     }
@@ -99,6 +116,7 @@ struct SplayTree {
         else if (par->v > v) { par->c[0] = x; }
         
         par->UpdateSize();
+        par->UpdateTotal();
         x->p = par;
         x->Splay();
         return x;
@@ -138,6 +156,7 @@ struct SplayTree {
 
         maxNode->c[1] = rightSubTree;
         maxNode->UpdateSize();
+        maxNode->UpdateTotal();
 
         if (rightSubTree != NULL)
             rightSubTree->p = maxNode;
@@ -176,6 +195,8 @@ struct SplayTree {
 
         leftTree->UpdateSize();
         rightTree->UpdateSize();
+        leftTree->UpdateTotal();
+        rightTree->UpdateTotal();
         return make_pair(leftTree, rightTree);
     }
 
@@ -185,12 +206,33 @@ struct SplayTree {
 
         cout << prefix;
         cout << (isRoot? "---" : (isRight? ".--" : "`--"));
-        cout << v << "(" << size << ")" << endl;
+        cout << v << "(" << size << ")" << "[" << total << "]" << endl;
 
         if (c[0])
         c[0]->Print(prefix + (isRight? "|  ": "   "), false, false);
     }
 };
+
+// int main() {
+// // splay node 𝑥𝑟+1 to root, and node 𝑥𝑙−1 to just below 𝑥𝑟+1.
+
+//     int numbers;
+//     cin >> numbers;
+//     ll temp;
+//     cin >> temp;
+//     SplayTree *root = new SplayTree(temp);
+
+//     for (int i = 1; i < numbers; i++) {
+//         cin >> temp;
+//         root = root->Insert(temp);
+//     }
+
+//     ll start;
+//     ll end;
+//     cin >> start >> end;
+
+//     root->Print();
+// }
 
 int main() {
     SplayTree *root = new SplayTree(10);
@@ -203,3 +245,4 @@ int main() {
     root = root->Insert(40);
     root->Print();
 }
+
