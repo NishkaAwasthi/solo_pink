@@ -10,15 +10,21 @@ const string EMPTY=""; // for printing
 
 struct SplayTree {
     int v; // Value of node
+    int real_v; 
     int size; // Subtree size
-    int total; //total sum so far
+    int total; 
+    int totleft;
+    int totright;
+    int count;
     SplayTree *c[2]; // Left child -> [0], right child -> [1]
     SplayTree *p; // Parent of node
 
     //constructor
     SplayTree(int _v) {
         v = _v;
+        real_v = _v;
         c[0] = c[1] = p = NULL;
+        count = 1;
     }
 
     int GetSize(SplayTree *x) {
@@ -31,12 +37,24 @@ struct SplayTree {
         return x->total;
     }
 
+    int GetTotalLeft(SplayTree *x) {
+        if (x == NULL) { return 0; }
+        return x->totleft;
+    }
+
+    int GetTotalRight(SplayTree *x) {
+        if (x == NULL) { return 0; }
+        return x->totright;
+    }
+
     void UpdateSize() {
-        size = 1 + GetSize(c[0]) + GetSize(c[1]);
+        size = count + GetSize(c[0]) + GetSize(c[1]);
     }
 
     void UpdateTotal() {
-        total = v + GetTotal(c[0]) + GetTotal(c[1]);
+        total = (count*v) + GetTotal(c[0]) + GetTotal(c[1]);
+        totleft = (count*v) + GetTotal(c[0]);
+        totright = (count*v) + GetTotal(c[1]);
     }
 
     void Rotate() {
@@ -56,9 +74,8 @@ struct SplayTree {
         }
 
         p->UpdateSize();
-        UpdateSize();
-
         p->UpdateTotal();
+        UpdateSize();
         UpdateTotal();
 
         p = gp;
@@ -105,16 +122,44 @@ struct SplayTree {
         return x;
     }
 
+    SplayTree* InsertWithDuplicateNodes(int val) {
+        SplayTree* par = FindNode(val);
+        
+        if (par->v == val) {
+            SplayTree* x = new SplayTree(val);
+            x->c[0] = par->c[0];
+            x->p = par;
+            par->c[0]->p = x;
+            par->c[0] = x;
+            return par;
+        }
+        
+        else {
+            SplayTree* x = new SplayTree(val);
+            if (par->v < val) { par->c[1] = x; }
+            else if (par->v > v) { par->c[0] = x; }
+            
+            par->UpdateSize();
+            par->UpdateTotal();
+            x->p = par;
+            x->Splay();
+            return x;
+        }
+    }
+
     SplayTree* Insert(int v) {
         SplayTree* par = FindNode(v);
         if (par->v == v) {
+            par->count += 1;
+            par->real_v = par->v * par->count;
             par->Splay();
             return par;
         }
+
         SplayTree* x = new SplayTree(v);
-        if (par->v <= v) { par->c[1] = x; }
+        if (par->v < v) { par->c[1] = x; }
         else if (par->v > v) { par->c[0] = x; }
-        
+
         par->UpdateSize();
         par->UpdateTotal();
         x->p = par;
@@ -131,6 +176,13 @@ struct SplayTree {
         }
 
         return x;
+    }
+
+    SplayTree* FindSubTree(SplayTree* root, int v1, int v2) {
+        //SplayTree* x = new SplayTree(v);
+        root = root->Search(v1);
+        root = root->Search(v2);
+        return root;
     }
 
     SplayTree* Delete(int v) {
@@ -194,8 +246,8 @@ struct SplayTree {
         }
 
         leftTree->UpdateSize();
-        rightTree->UpdateSize();
         leftTree->UpdateTotal();
+        rightTree->UpdateSize();
         rightTree->UpdateTotal();
         return make_pair(leftTree, rightTree);
     }
@@ -206,43 +258,40 @@ struct SplayTree {
 
         cout << prefix;
         cout << (isRoot? "---" : (isRight? ".--" : "`--"));
-        cout << v << "(" << size << ")" << "[" << total << "]" << endl;
+        cout << v << "(" << total << ")" << endl;
 
         if (c[0])
         c[0]->Print(prefix + (isRight? "|  ": "   "), false, false);
     }
 };
 
-// int main() {
-// // splay node 𝑥𝑟+1 to root, and node 𝑥𝑙−1 to just below 𝑥𝑟+1.
-
-//     int numbers;
-//     cin >> numbers;
-//     ll temp;
-//     cin >> temp;
-//     SplayTree *root = new SplayTree(temp);
-
-//     for (int i = 1; i < numbers; i++) {
-//         cin >> temp;
-//         root = root->Insert(temp);
-//     }
-
-//     ll start;
-//     ll end;
-//     cin >> start >> end;
-
-//     root->Print();
-// }
 
 int main() {
-    SplayTree *root = new SplayTree(10);
-    cout << "\n";
+    // splay node 𝑥𝑟+1 to root, and node 𝑥𝑙−1 to just below 𝑥𝑟+1.
+    int numbers;
+    cin >> numbers;
+    ll temp;
+    cin >> temp;
+    SplayTree *root = new SplayTree(temp);
 
-    root = root->Insert(30);
-    root = root->Insert(50);
-    root = root->Insert(20);
-    root = root->Insert(60);
-    root = root->Insert(40);
+    for (int i = 1; i < numbers; i++) {
+        cin >> temp;
+        root = root->Insert(temp);
+    }
+
+    ll start;
+    ll end;
+    cin >> start >> end;
+
+    // root = root->Search(start);
+    // root = root->Search(end);
+    // root->Print();
+
+    root = root->FindSubTree(root, start, end);
     root->Print();
+
+    ll ans = root->c[0]->GetTotalRight(root->c[0]) + root->real_v;
+    cout << ans << "\n";
 }
+
 

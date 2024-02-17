@@ -1,11 +1,11 @@
-// TEMPLATE CODE FOR SPLAY
-
 #include <stdio.h>
 #include <cstddef>
 #include <iostream>
 using namespace std;
+typedef long long ll;
 
 const string EMPTY=""; // for printing
+
 struct SplayTree {
     int v; // Value of node
     int real_v;
@@ -197,5 +197,24 @@ struct SplayTree {
 };
 
 int main() {
-    return 0;
+    //I/O
+    int n;
+    int temp;
+    cin >> n >> temp;
+
+    SplayTree *root = new SplayTree(temp);
+    for(int i = 1; i < n; i++) {
+        cin >> temp;
+        root = root->Insert(temp);
+    }
+
+    int m;
+    cin >> m;
+
+    for(int i = 0; i < m; i++) {
+    }
+
+
+    cout << "\n";
+    root->Print();
 }

@@ -1,5 +1,4 @@
-// TEMPLATE CODE FOR SPLAY
-
+#include <bits/stdc++.h>
 #include <stdio.h>
 #include <cstddef>
 #include <iostream>
@@ -10,14 +9,15 @@ struct SplayTree {
     int v; // Value of node
     int real_v;
     int size; // Subtree size
-    int count;
+    int sizeLeft;
+    int frequency; // number
     SplayTree *c[2]; // Left child -> [0], right child -> [1]
     SplayTree *p; // Parent of node
 
     SplayTree(int _v) {
         v = _v;
         c[0] = c[1] = p = NULL;
-        count = 1;
+        frequency = 1;
     }
 
     int GetSize(SplayTree *x) {
@@ -25,8 +25,14 @@ struct SplayTree {
         return x->size;
     }
 
+    int GetSizeLeft(SplayTree *x) {
+        if (x == NULL) { return 0; }
+        return x->sizeLeft;
+    }
+
     void UpdateSize() {
-        size = count + GetSize(c[0]) + GetSize(c[1]);
+        size = frequency + GetSize(c[0]) + GetSize(c[1]);
+        sizeLeft = frequency + GetSize(c[0]);
     }
 
     void Rotate() {
@@ -80,43 +86,54 @@ struct SplayTree {
         return xx;
     }
 
+    SplayTree* FindNodebyIndex(int pos) {
+        SplayTree *x = this;
+        SplayTree *xx = NULL;
+
+        while (x != NULL) {
+            xx = x;
+            if (x->size > pos) { x = x->c[0]; }
+            else if (x->size < pos) { x = x->c[1]; }
+            else return x;
+        }
+        return xx;
+    }
+
     SplayTree* Search(int v) {
         SplayTree* x = FindNode(v);
         x->Splay();
         return x;
     }
 
-    SplayTree* InsertWithDuplicateNodes(int val) {
-        SplayTree* par = FindNode(val);
-        if (par->v == val) {
-            SplayTree* x = new SplayTree(val);
-            x->c[0] = par->c[0];
-            x->p = par;
-            par->c[0]->p = x;
-            par->c[0] = x;
-            return par;
-        } else {
-            SplayTree* x = new SplayTree(val);
-            if (par->v < val) { par->c[1] = x; }
-            else if (par->v > v) { par->c[0] = x; }
-            par->UpdateSize();
-            x->p = par;
-            x->Splay();
-            return x;
-        }
-    }
-
     SplayTree* Insert(int v) {
         SplayTree* par = FindNode(v);
         if (par->v == v) {
-            par->count += 1;
-            par->real_v = par->v * par->count;
+            par->frequency += 1;
+            par->real_v = par->v * par->frequency;
             par->Splay();
             return par;
         }
         SplayTree* x = new SplayTree(v);
         if (par->v < v) { par->c[1] = x; }
         else if (par->v > v) { par->c[0] = x; }
+        par->UpdateSize();
+        x->p = par;
+        x->Splay();
+        return x;
+    }
+
+    SplayTree* InsertbyIndex(int pos, int v) {
+        SplayTree* par = FindNodebyIndex(pos);
+        if (par->v == v) {
+            par->frequency += 1;
+            par->real_v = par->v * par->frequency;
+            par->Splay();
+            return par;
+        }
+
+        SplayTree* x = new SplayTree(v);
+        if (par->sizeLeft < pos) { par->c[1] = x; }
+        else if (par->sizeLeft > pos) { par->c[0] = x; }
         par->UpdateSize();
         x->p = par;
         x->Splay();
@@ -134,7 +151,7 @@ struct SplayTree {
 
     SplayTree* Delete(int v) {
         SplayTree* x = FindNode(v);
-        if (x->count > 1) { x->count--; return x;}
+        if (x->frequency > 1) { x->frequency--; return x;}
         else {
             x->Splay();
             if (x->v != v) { return x; }
@@ -155,47 +172,26 @@ struct SplayTree {
         }
     }
 
-    pair<SplayTree*, SplayTree*> SplitByValue(int v) {
-        SplayTree* x = FindNode(v);
-        x->Splay();
-
-        SplayTree *leftTree, *rightTree;
-
-        if (x->v <= v) {
-        // Destroy right edge
-
-        leftTree = x;
-        rightTree = x->c[1];
-
-        if (x->c[1] != NULL)
-            x->c[1]->Destroy();
-        }
-
-        else {
-        // Destroy left edge
-        leftTree = x->c[0];
-        rightTree = x;
-
-        if (x->c[0] != NULL)
-            x->c[0]->Destroy();
-        }
-
-        leftTree->UpdateSize();
-        rightTree->UpdateSize();
-        return make_pair(leftTree, rightTree);
-    }
-
     void Print(string prefix=EMPTY, bool isRight=false, bool isRoot=true) {
         if (c[1]) {c[1]->Print(prefix + (!isRight && !isRoot? "|  ": "   "), true, false);}
 
         cout << prefix;
         cout << (isRoot? "---" : (isRight? ".--" : "`--"));
-        cout << v << "(" << count << ")" << endl;
+        cout << v << "(" << size << ")" << endl;
 
         if (c[0]) {c[0]->Print(prefix + (isRight? "|  ": "   "), false, false);}
     }
 };
 
 int main() {
+    SplayTree *root = new SplayTree(10);
+    root = root->Insert(50);
+    root = root->Insert(30);
+    root = root->Insert(40);
+    root = root->Insert(20);
+
+    root->Print();
+    SplayTree *ans = root->FindNodebyIndex(3);
+    cout << ans->v << "\n";
     return 0;
 }

@@ -1,5 +1,3 @@
-// TEMPLATE CODE FOR SPLAY
-
 #include <stdio.h>
 #include <cstddef>
 #include <iostream>
@@ -197,5 +195,7 @@ struct SplayTree {
 };
 
 int main() {
-    return 0;
+    
+
+
 }
