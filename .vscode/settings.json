@@ -3,6 +3,10 @@
         "iosfwd": "cpp",
         "__split_buffer": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "chrono": "cpp",
+        "iostream": "cpp"
     }
 }
