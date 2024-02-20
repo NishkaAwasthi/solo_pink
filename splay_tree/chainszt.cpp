@@ -1,7 +1,8 @@
 // Template starts here:
 
 #include <bits/stdc++.h>
-
+#include <iostream>
+typedef long long ll;
 namespace allocator {
 
 // Array allocator.
@@ -205,6 +206,7 @@ int main() {
     long long u; scanf("%lld", &u);
     t.insert(t.new_node(node(u)), t.size());
   }
+  
   scanf("%d", &M);
   while (M--) {
     char c[10];
