@@ -1,22 +1,11 @@
-// #include <bits/stdc++.h>
-#include <cassert>
+#include <bits/stdc++.h>
 #include <iostream>
 #include <iomanip>
-#include <cmath>
 
-
-#define ll long long
-#define ui unsigned int
-
-#define mp make_pair
-#define pb push_back
 #define endl "\n"
 #define PI 3.141592
 
 using namespace std;
-
-typedef pair<int, int> pii;
-typedef pair<ll, int> pll;
 
 #define cd const double &
 const double EPS = 1E-10;
@@ -54,11 +43,6 @@ struct line {
 	point s, t;
 	explicit line (cp s = point (), cp t = point ()) : s (s), t (t) {} };
 bool point_on_segment (cp a, cl b) { return sgn (det (a - b.s, b.t - b.s)) == 0 && sgn (dot (b.s - a, b.t - a)) <= 0; }
-bool two_side (cp a, cp b, cl c) { return sgn (det (a - c.s, c.t - c.s)) * sgn (det (b - c.s, c.t - c.s)) < 0; }
-bool intersect_judgment (cl a, cl b) {
-	if (point_on_segment (b.s, a) || point_on_segment (b.t, a)) return true;
-	if (point_on_segment (a.s, b) || point_on_segment (a.t, b)) return true;
-	return two_side (a.s, a.t, b) && two_side (b.s, b.t, a); }
 point line_intersect (cl a, cl b) {
 	double s1 = det (a.t - a.s, b.s - a.s), s2 = det (a.t - a.s, b.t - a.s);
 	return (b.s * s2 - b.t * s1) / (s2 - s1); }
@@ -85,7 +69,7 @@ std::vector <point> line_circle_intersect (cl a, cc b) {
 
 //###############################################################################
 //###############################################################################
-//###############################################################################
+//###############################################################################xf
 
 int w, l, r, x1, yy1, x2, y2, x3, y3, h;
  
