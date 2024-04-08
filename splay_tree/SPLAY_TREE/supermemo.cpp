@@ -239,10 +239,7 @@ int main() {
       if (z > 0) {
         // swap [x - 1, y - T) and [y - T, y)
         node *right = t.find_range(y - z, y);
-        right->f->c[1] = nullptr; 
-        right->f->update(); 
-        right->f->f->update(); 
-        right->f = nullptr;
+        right->f->c[1] = nullptr, right->f->update(), right->f->f->update(), right->f = nullptr;
         t.insert(right, x - 1);
       }
     } 
@@ -260,14 +257,6 @@ int main() {
     else if (strcmp(instruct, "MIN") == 0) {
       std::cin >> x >> y;
       std::cout << t.find_range(x - 1, y)->val_min << "\n";
-    }
-
-    else if (strcmp(instruct, "PRINT") == 0) {
-      std::cin >> x >> y;
-      for (int i = x; i < y+1; i++) {
-        std::cout << t.find_range(i, i)->val_min << " ";
-      }
-      std::cout << "\n";
     }
   }
 }
